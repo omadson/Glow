@@ -3,6 +3,8 @@ from torch.utils.data import Dataset
 from sklearn.datasets import load_digits
 
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class DigitsDataset(Dataset):
     def __init__(self):
         self.images = torch.Tensor(load_digits(as_frame=True)['images']).double().to(device)

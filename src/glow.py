@@ -83,7 +83,7 @@ class Foo:
 class Glow:
     def __init__(self, c, h, w, levels=3, hidden_channels=256, steps_per_level=10, num_bits=8, multi_scale=True):
         self.shape = (c, h, w)
-        distribution = distributions.StandardNormal((c * h * w,)).to(device)
+        distribution = distributions.StandardNormal((c * h * w,)).double().to(device)
         transform = create_transform(
             c, h, w,
             levels=levels,
@@ -92,7 +92,7 @@ class Glow:
             num_bits=num_bits,
             multi_scale=multi_scale
         )
-        self.flow = flows.Flow(transform, distribution)
+        self.flow = flows.Flow(transform, distribution).double().to(device)
     
     def train(self, train_set, batch_size=128, max_epochs=50, log_interval=10, learning_rate=5e-4, weight_decay=1e-2):
         c, h, w = self.shape
@@ -115,4 +115,5 @@ class Glow:
         return loss_list
     
     def sample(self, n_samples=100):
+        self.flow.eval()
         return self.flow.sample_and_log_prob(n_samples)
